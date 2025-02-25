@@ -1,5 +1,5 @@
 /* eslint-disable no-undef */
-import  Ship from "../modules/ship";
+import Ship from "../modules/ship";
 
 describe("test ship object", () => {
   let ship;
