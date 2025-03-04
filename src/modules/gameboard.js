@@ -7,6 +7,12 @@ class Gameboard {
     this.sunkenShips = [];
   }
 
+  resetBoard() {
+    this.board = Array.from(Array(this.x), () => new Array(this.y).fill(null));
+    this.ships = [];
+    this.sunkenShips = [];
+  }
+
   placeShip(ship, coordinates, direction) {
     this.#checkArguments(ship, coordinates, direction);
     const x = coordinates[0];
@@ -27,9 +33,7 @@ class Gameboard {
     this.ships.push(ship);
   }
 
-  receiveAttack(coordinates) {
-    const x = coordinates[0];
-    const y = coordinates[1];
+  receiveAttack(x, y) {
     const attackedField = this.board[x][y];
     if (
       attackedField &&
@@ -47,7 +51,7 @@ class Gameboard {
   }
 
   allShipsSunk() {
-    return this.sunkenShips.length === this.ships.length;
+    return this.sunkenShips.length > 0 && this.ships.length > 0 && this.sunkenShips.length === this.ships.length;
   }
 
   #checkArguments(ship, coordinates, direction) {
