@@ -1,0 +1,143 @@
+@font-face {
+  font-family: blackops;
+  src: url(./fonts/Black_Ops_One/BlackOpsOne-Regular.ttf);
+}
+
+:root{
+  --primary: #1E1E1E;
+  --secondary: #FAFAFA;
+  --accent: #51b34c;
+  --background: #2b2f34;
+  --hover: #00D4D4;
+}
+
+p {
+  margin-block-start: 0;
+  margin-block-end: 0;
+}
+
+header {
+  display: flex;
+  align-items: center;
+  gap: 2rem;
+  justify-content: center;
+}
+
+h1 {
+  font-family: blackops;
+  color: var(--secondary);
+  letter-spacing: 0.25rem;
+  font-size: 3rem;
+  margin-block-start: 0;
+  margin-block-end: 0;
+  align-self: flex-start;
+}
+
+body {
+  background-color: var(--background);
+  display: flex;
+  flex-direction: column;
+  gap: 3rem;
+  align-items: center;
+  font-family: blackops;
+  color: var(--secondary);
+}
+
+nav {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+nav button {
+  appearance: none;
+  padding: 0.5rem 1rem;
+  border: 1px solid var(--accent);
+  border-radius: 10px;
+  background-color: var(--accent);
+  color: var(--secondary);
+  transition: 0.5s ease;
+  font-size: 100%;
+  font-family: inherit;
+}
+
+nav button:hover {
+  filter: brightness(85%);
+}
+
+main {
+  display: flex;
+  justify-content: center;
+  gap: 5em;
+}
+
+.user-area {
+  display: flex;
+  gap: 2rem;
+}
+
+.user-ships {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  width: 300px;
+  height: 300px;
+  justify-content: center;
+}
+
+.user-ships.rotate-container {
+  display: grid;
+  grid-template-columns: 100px 100px 100px;
+}
+
+.rotate {
+  transform: rotate(90deg);
+  width: 150px;
+  height: 150px;
+  margin-bottom: 1rem;
+}
+
+.ship-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 1rem;
+}
+
+
+.gameboard .row {
+  display: flex;
+}
+
+.row .col {
+  border: 1px solid var(--secondary);
+  min-width: 25px;
+  min-height: 25px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.ship-part, .hit, .miss {
+  min-width: 25px; 
+  min-height: 25px; 
+  border: 1px solid var(--secondary);
+  background-color: var(--secondary);
+}
+
+.miss {
+  background-color: yellow;
+}
+
+.hit {
+  background-color: red;
+}
+
+#user-gameboard {
+  order: 2;
+}
+
+#computer-gameboard {
+  order: 3;
+}
