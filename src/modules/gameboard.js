@@ -43,7 +43,9 @@ class Gameboard {
     this.ships.push(ship);
   }
 
-  receiveAttack(x, y) {
+  receiveAttack(coordinates) {
+    const x = coordinates[0];
+    const y = coordinates[1];
     const attackedField = this.board[x][y];
     if (
       attackedField &&

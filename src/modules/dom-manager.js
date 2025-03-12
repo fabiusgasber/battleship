@@ -195,7 +195,7 @@ const domManager = (() => {
       const randomY = Math.floor(Math.random() * 10);
       const userBoard = user.getGameboard();
       try {
-        userBoard.receiveAttack(randomX, randomY);
+        userBoard.receiveAttack([randomX, randomY]);
         takeTurns(true);
       }
       catch(error){
@@ -208,7 +208,7 @@ const domManager = (() => {
       const { uiBoard, rowIndex, colIndex } = getGameboardInfos(e);
       if(uiBoard.getAttribute("id") === "computer-gameboard"){
         const computerBoard = computer.getGameboard();
-        computerBoard.receiveAttack(rowIndex, colIndex);
+        computerBoard.receiveAttack([rowIndex, colIndex]);
         takeTurns(false);
     }
   }
