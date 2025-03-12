@@ -74,6 +74,7 @@ const domManager = (() => {
       user.getGameboard().resetBoard();
       computer.getGameboard().resetBoard();
       test = createUserShips();
+      takeTurns(false);
       gameInfo.textContent = "User place your ships...";
       if (!computer.getGameboard().ships.length) placeRandomShips(computer);
     }
