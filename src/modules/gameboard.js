@@ -13,23 +13,33 @@ class Gameboard {
     this.sunkenShips = [];
   }
 
+  #checkPlacement(ship, x, y, direction){
+      for (let i = 0; i < ship.length; i += 1) {
+        const checkX = direction === "h" ? x : x + i;
+        const checkY = direction === "h" ? y + i : y;
+        if (this.board[checkX]?.[checkY] && this.board[checkX]?.[checkY]?.hits !== undefined || 
+          this.board[checkX - 1]?.[checkY]?.hits !== undefined ||
+          this.board[checkX + 1]?.[checkY]?.hits !== undefined ||
+          this.board[checkX]?.[checkY + 1]?.hits !== undefined ||
+          this.board[checkX]?.[checkY - 1]?.hits !== undefined ||
+          this.board[checkX - 1]?.[checkY + 1]?.hits !== undefined ||
+          this.board[checkX - 1]?.[checkY - 1]?.hits !== undefined ||
+          this.board[checkX + 1]?.[checkY + 1]?.hits !== undefined ||
+          this.board[checkX + 1]?.[checkY - 1]?.hits !== undefined
+        ) return false;
+      }
+      return true;
+  }
+
   placeShip(ship, coordinates, direction) {
     this.#checkArguments(ship, coordinates, direction);
     const x = coordinates[0];
     const y = coordinates[1];
-    const field = this.board[x][y];
-    if(this.ships.length === 5) throw new Error("Gameboard full. Reset first.")
-    if (field && field.hits !== undefined)
-      throw new Error("Field is occupied already. Try again.");
-    if (direction === "h") {
       for (let i = 0; i < ship.length; i += 1) {
-        this.board[x][y + i] = ship;
+        const checkX = direction === "h" ? x : x + i;
+        const checkY = direction === "h" ? y + i : y;
+        this.board[checkX][checkY] = ship;
       }
-    } else if (direction === "v") {
-      for (let i = 0; i < ship.length; i += 1) {
-        this.board[x + i][y] = ship;
-      }
-    }
     this.ships.push(ship);
   }
 
@@ -77,6 +87,8 @@ class Gameboard {
       (direction === "v" && ship.length + coordinates[0] > this.x)
     )
       throw new Error("Ship was placed out of bounds. Try again.");
+      if(this.ships.length >= 5) throw new Error("Gameboard full. Reset first.")
+      if(!this.#checkPlacement(ship, coordinates[0], coordinates[1], direction)) throw new Error("Oops! You can't place a ship next to another. Try a different position!");
   }
 }
 
