@@ -13,33 +13,36 @@ class Gameboard {
     this.sunkenShips = [];
   }
 
-  #checkPlacement(ship, x, y, direction){
-      for (let i = 0; i < ship.length; i += 1) {
-        const checkX = direction === "h" ? x : x + i;
-        const checkY = direction === "h" ? y + i : y;
-        if (this.board[checkX]?.[checkY] && this.board[checkX]?.[checkY]?.hits !== undefined || 
-          this.board[checkX - 1]?.[checkY]?.hits !== undefined ||
-          this.board[checkX + 1]?.[checkY]?.hits !== undefined ||
-          this.board[checkX]?.[checkY + 1]?.hits !== undefined ||
-          this.board[checkX]?.[checkY - 1]?.hits !== undefined ||
-          this.board[checkX - 1]?.[checkY + 1]?.hits !== undefined ||
-          this.board[checkX - 1]?.[checkY - 1]?.hits !== undefined ||
-          this.board[checkX + 1]?.[checkY + 1]?.hits !== undefined ||
-          this.board[checkX + 1]?.[checkY - 1]?.hits !== undefined
-        ) return false;
-      }
-      return true;
+  #checkPlacement(ship, x, y, direction) {
+    for (let i = 0; i < ship.length; i += 1) {
+      const checkX = direction === "h" ? x : x + i;
+      const checkY = direction === "h" ? y + i : y;
+      if (
+        (this.board[checkX]?.[checkY] &&
+          this.board[checkX]?.[checkY]?.hits !== undefined) ||
+        this.board[checkX - 1]?.[checkY]?.hits !== undefined ||
+        this.board[checkX + 1]?.[checkY]?.hits !== undefined ||
+        this.board[checkX]?.[checkY + 1]?.hits !== undefined ||
+        this.board[checkX]?.[checkY - 1]?.hits !== undefined ||
+        this.board[checkX - 1]?.[checkY + 1]?.hits !== undefined ||
+        this.board[checkX - 1]?.[checkY - 1]?.hits !== undefined ||
+        this.board[checkX + 1]?.[checkY + 1]?.hits !== undefined ||
+        this.board[checkX + 1]?.[checkY - 1]?.hits !== undefined
+      )
+        return false;
+    }
+    return true;
   }
 
   placeShip(ship, coordinates, direction) {
     this.#checkArguments(ship, coordinates, direction);
     const x = coordinates[0];
     const y = coordinates[1];
-      for (let i = 0; i < ship.length; i += 1) {
-        const checkX = direction === "h" ? x : x + i;
-        const checkY = direction === "h" ? y + i : y;
-        this.board[checkX][checkY] = ship;
-      }
+    for (let i = 0; i < ship.length; i += 1) {
+      const checkX = direction === "h" ? x : x + i;
+      const checkY = direction === "h" ? y + i : y;
+      this.board[checkX][checkY] = ship;
+    }
     this.ships.push(ship);
   }
 
@@ -63,7 +66,11 @@ class Gameboard {
   }
 
   allShipsSunk() {
-    return this.sunkenShips.length > 0 && this.ships.length > 0 && this.sunkenShips.length === this.ships.length;
+    return (
+      this.sunkenShips.length > 0 &&
+      this.ships.length > 0 &&
+      this.sunkenShips.length === this.ships.length
+    );
   }
 
   #checkArguments(ship, coordinates, direction) {
@@ -77,9 +84,7 @@ class Gameboard {
       coordinates[0] < 0 ||
       coordinates[1] < 0
     )
-      throw new Error(
-        `Ship was placed out of bounds. Try again.`,
-      );
+      throw new Error(`Ship was placed out of bounds. Try again.`);
     if (direction !== "h" && direction !== "v")
       throw new Error(
         "Please provide the direction as 'h' for horizontal or 'v' for vertical",
@@ -89,8 +94,11 @@ class Gameboard {
       (direction === "v" && ship.length + coordinates[0] > this.x)
     )
       throw new Error("Ship was placed out of bounds. Try again.");
-      if(this.ships.length >= 5) throw new Error("Gameboard full. Reset first.")
-      if(!this.#checkPlacement(ship, coordinates[0], coordinates[1], direction)) throw new Error("Oops! You can't place a ship next to another. Try a different position!");
+    if (this.ships.length >= 5) throw new Error("Gameboard full. Reset first.");
+    if (!this.#checkPlacement(ship, coordinates[0], coordinates[1], direction))
+      throw new Error(
+        "Oops! You can't place a ship next to another. Try a different position!",
+      );
   }
 }
 

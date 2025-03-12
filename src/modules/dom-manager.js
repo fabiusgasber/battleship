@@ -11,126 +11,144 @@ const domManager = (() => {
   const gameInfo = document.querySelector("#game-info");
   let test = null;
 
-  const SHIPS = [new Ship(5), new Ship(4), new Ship(3), new Ship(3), new Ship(2)];
+  const SHIPS = [
+    new Ship(5),
+    new Ship(4),
+    new Ship(3),
+    new Ship(3),
+    new Ship(2),
+  ];
 
   const rotateShips = (e) => {
-    if(e && e.target.getAttribute("id") === "rotate-btn"){
-      const container = document.querySelector(".user-ships")
+    if (e && e.target.getAttribute("id") === "rotate-btn") {
+      const container = document.querySelector(".user-ships");
       container?.classList?.toggle("rotate-container");
       const ships = Array.from(document.querySelectorAll(".ship-container"));
-      if(ships){
-        ships.forEach(ship => ship.classList.toggle("rotate"));
+      if (ships) {
+        ships.forEach((ship) => ship.classList.toggle("rotate"));
       }
     }
-  }
+  };
 
   const randomizeShips = (e) => {
-    if(e && e.target.getAttribute("id") === "random-btn"){
+    if (e && e.target.getAttribute("id") === "random-btn") {
       const test = document.querySelector("#reset-btn");
-      test.click();  
-    SHIPS.forEach(ship => {
-      let placed = false;
-      while(!placed){
-        let randomX = Math.floor(Math.random() * 10);
-        let randomY = Math.floor(Math.random() * 10);
-        const direction = Math.floor(Math.random() * 2) === 1 ? "h" : "v";  
-        if (
-          (direction === "h" && ship.length + randomY >= 10) ||
-          (direction === "v" && ship.length + randomX >= 10) ||
-          (user.getGameboard().board[randomX][randomY] instanceof Ship)
-        ) 
-        continue;
-        try{
-          user.getGameboard().placeShip(ship, [randomX, randomY], direction);
-          placed = true;
+      test.click();
+      SHIPS.forEach((ship) => {
+        let placed = false;
+        while (!placed) {
+          let randomX = Math.floor(Math.random() * 10);
+          let randomY = Math.floor(Math.random() * 10);
+          const direction = Math.floor(Math.random() * 2) === 1 ? "h" : "v";
+          if (
+            (direction === "h" && ship.length + randomY >= 10) ||
+            (direction === "v" && ship.length + randomX >= 10) ||
+            user.getGameboard().board[randomX][randomY] instanceof Ship
+          )
+            continue;
+          try {
+            user.getGameboard().placeShip(ship, [randomX, randomY], direction);
+            placed = true;
+          } catch (error) {
+            gameInfo.textContent = error.message;
+          }
         }
-        catch(error){
-          gameInfo.textContent = error.message;
-        }
-      }
-    })
-    renderGameboard();
-    checkBeginPossible();
-  }
-  }
+      });
+      renderGameboard();
+      checkBeginPossible();
+    }
+  };
 
   const checkBeginPossible = () => {
-    if(user.getGameboard().ships.length === SHIPS.length){
-      gameInfo.textContent = "Press start to play..."
+    if (user.getGameboard().ships.length === SHIPS.length) {
+      gameInfo.textContent = "Press start to play...";
     }
-  }
+  };
 
   const resetGame = (e) => {
-    if(e && e.target.getAttribute("id") === "reset-btn"){
-    user.getGameboard().resetBoard();
-    computer.getGameboard().resetBoard();
-    test = createUserShips();
-    gameInfo.textContent = "User place your ships..."
-    if(!computer.getGameboard().ships.length) placeComputerShips();
+    if (e && e.target.getAttribute("id") === "reset-btn") {
+      user.getGameboard().resetBoard();
+      computer.getGameboard().resetBoard();
+      test = createUserShips();
+      gameInfo.textContent = "User place your ships...";
+      if (!computer.getGameboard().ships.length) placeComputerShips();
     }
     renderGameboard();
     main.append(test);
-  }
+  };
 
   const createButton = (text, id) => {
     const btn = document.createElement("button");
     btn.setAttribute("id", id);
     btn.textContent = text;
     return btn;
-  }
+  };
 
   const beginGame = (e) => {
-    if(e && e.target.getAttribute("id") === "start-btn") {
+    if (e && e.target.getAttribute("id") === "start-btn") {
       takeTurns(true);
     }
-  }
+  };
 
   let draggedShip = null;
   let dragged = null;
 
   const handleDragOver = (e) => {
     const gameboard = e.target.closest(".gameboard");
-    if(gameboard && gameboard.getAttribute("id") === "user-gameboard") e.preventDefault();
-  }
+    if (gameboard && gameboard.getAttribute("id") === "user-gameboard")
+      e.preventDefault();
+  };
 
   const handleMouseDown = (e) => {
-    if(e.target.classList.contains("ship-part")) draggedShip = e.target;
-  }
+    if (e.target.classList.contains("ship-part")) draggedShip = e.target;
+  };
 
   const handleDragStart = (e) => {
     dragged = e.target;
-  }
+  };
 
   const handleDrop = (e) => {
     try {
-      let { uiBoard, colIndex, rowIndex } = getGameboardInfos(e)
-    if(uiBoard.getAttribute("id") === "user-gameboard" && dragged && draggedShip){
-      e.preventDefault();
-      const children = Array.from(dragged.children);
-      const length = parseInt(dragged.getAttribute("length"));
-      if(document.querySelector(".ship-container").classList.contains("rotate")) {
-        gameInfo.textContent = "User place your ships..."
-        rowIndex = parseInt(rowIndex) - children.indexOf(draggedShip);
-        colIndex = parseInt(colIndex); 
-        user.getGameboard().placeShip(new Ship(length), [rowIndex, colIndex], "v");
+      let { uiBoard, colIndex, rowIndex } = getGameboardInfos(e);
+      if (
+        uiBoard.getAttribute("id") === "user-gameboard" &&
+        dragged &&
+        draggedShip
+      ) {
+        e.preventDefault();
+        const children = Array.from(dragged.children);
+        const length = parseInt(dragged.getAttribute("length"));
+        if (
+          document.querySelector(".ship-container").classList.contains("rotate")
+        ) {
+          gameInfo.textContent = "User place your ships...";
+          rowIndex = parseInt(rowIndex) - children.indexOf(draggedShip);
+          colIndex = parseInt(colIndex);
+          user
+            .getGameboard()
+            .placeShip(new Ship(length), [rowIndex, colIndex], "v");
+        } else if (
+          !document
+            .querySelector(".ship-container")
+            .classList.contains("rotate")
+        ) {
+          gameInfo.textContent = "User place your ships...";
+          rowIndex = parseInt(rowIndex);
+          colIndex = parseInt(colIndex) - children.indexOf(draggedShip);
+          user
+            .getGameboard()
+            .placeShip(new Ship(length), [rowIndex, colIndex], "h");
+        }
       }
-      else if(!document.querySelector(".ship-container").classList.contains("rotate")){
-        gameInfo.textContent = "User place your ships..."
-        rowIndex = parseInt(rowIndex);
-        colIndex = parseInt(colIndex) - children.indexOf(draggedShip);
-        user.getGameboard().placeShip(new Ship(length), [rowIndex, colIndex], "h");  
-      }
+      test = dragged.parentNode;
+      dragged.parentNode.removeChild(dragged);
+      renderGameboard();
+      main.append(test);
+      checkBeginPossible();
+    } catch (error) {
+      gameInfo.textContent = error.message;
     }
-    test = dragged.parentNode;
-    dragged.parentNode.removeChild(dragged);
-    renderGameboard();
-    main.append(test)
-    checkBeginPossible();
-  }
-  catch(error) {
-    gameInfo.textContent = error.message
-  }
-}
+  };
 
   const setUpEventListeners = (main, nav) => {
     main.addEventListener("dragstart", handleDragStart);
@@ -141,20 +159,20 @@ const domManager = (() => {
     nav.addEventListener("click", beginGame);
     nav.addEventListener("click", randomizeShips);
     nav.addEventListener("click", resetGame);
-  }
+  };
 
   const createUserShips = () => {
     const userShips = document.createElement("div");
-    userShips.classList.add("user-ships")
-    for(let i = 0; i < SHIPS.length; i+=1){
+    userShips.classList.add("user-ships");
+    for (let i = 0; i < SHIPS.length; i += 1) {
       const container = document.createElement("div");
       container.classList.add("ship-container");
       container.setAttribute("draggable", true);
       container.setAttribute("length", SHIPS[i].length);
-      for(let j = 0; j < SHIPS[i].length; j+=1){
+      for (let j = 0; j < SHIPS[i].length; j += 1) {
         const ship = document.createElement("div");
-        ship.classList.add("ship-part")
-        container.append(ship)
+        ship.classList.add("ship-part");
+        container.append(ship);
       }
       userShips.append(container);
     }
@@ -188,31 +206,29 @@ const domManager = (() => {
     } else if (field === 1) {
       container.classList.add("hit");
     }
-  }
+  };
 
   const computerAttack = () => {
-      const randomX = Math.floor(Math.random() * 10);
-      const randomY = Math.floor(Math.random() * 10);
-      const userBoard = user.getGameboard();
-      try {
-        userBoard.receiveAttack([randomX, randomY]);
-        takeTurns(true);
-      }
-      catch(error){
-        takeTurns(false);
-      }
+    const randomX = Math.floor(Math.random() * 10);
+    const randomY = Math.floor(Math.random() * 10);
+    const userBoard = user.getGameboard();
+    try {
+      userBoard.receiveAttack([randomX, randomY]);
+      takeTurns(true);
+    } catch (error) {
+      takeTurns(false);
+    }
   };
 
   const userAttack = (e) => {
     try {
       const { uiBoard, rowIndex, colIndex } = getGameboardInfos(e);
-      if(uiBoard.getAttribute("id") === "computer-gameboard"){
+      if (uiBoard.getAttribute("id") === "computer-gameboard") {
         const computerBoard = computer.getGameboard();
         computerBoard.receiveAttack([rowIndex, colIndex]);
         takeTurns(false);
-    }
-  }
-    catch (error) {
+      }
+    } catch (error) {
       takeTurns(true);
     }
   };
@@ -241,7 +257,7 @@ const domManager = (() => {
     const row = e.target.closest(".row");
     const col = e.target.closest(".col");
     const uiBoard = e.target.closest(".gameboard");
-    if(!row || !col || !uiBoard) throw new Error("Click at the board");
+    if (!row || !col || !uiBoard) throw new Error("Click at the board");
     const rowIndex = row.getAttribute("row");
     const colIndex = col.getAttribute("col");
     return {
@@ -250,7 +266,7 @@ const domManager = (() => {
       colIndex,
     };
   };
-  
+
   const createNav = () => {
     const nav = document.createElement("nav");
     nav.append(createButton("Rotate", "rotate-btn"));
@@ -258,40 +274,39 @@ const domManager = (() => {
     nav.append(createButton("Reset", "reset-btn"));
     nav.append(createButton("Start", "start-btn"));
     return nav;
-  }
+  };
 
   const renderGameboard = () => {
     main.replaceChildren();
-    main.append(createGameboard(user, false))
-    main.append(createGameboard(computer, true));  
-  }
+    main.append(createGameboard(user, false));
+    main.append(createGameboard(computer, true));
+  };
 
   const takeTurns = (userTurn) => {
     main.removeEventListener("click", userAttack);
-    if(user.getGameboard().ships.length === SHIPS.length && computer.getGameboard().ships.length === SHIPS.length){
-      if (userTurn && !isEnd()){
-        gameInfo.textContent = "Waiting for user to make turn..."
+    if (
+      user.getGameboard().ships.length === SHIPS.length &&
+      computer.getGameboard().ships.length === SHIPS.length
+    ) {
+      if (userTurn && !isEnd()) {
+        gameInfo.textContent = "Waiting for user to make turn...";
         main.addEventListener("click", userAttack);
-      }
-      else if(!userTurn && !isEnd()) {
+      } else if (!userTurn && !isEnd()) {
         main.removeEventListener("click", userAttack);
-        gameInfo.textContent = "Waiting for computer to make turn..."
+        gameInfo.textContent = "Waiting for computer to make turn...";
         setTimeout(() => computerAttack(), 300);
-      }
-      else if(isEnd()) {
+      } else if (isEnd()) {
         main.removeEventListener("click", userAttack);
-        if(user.getGameboard().allShipsSunk()){
-          gameInfo.textContent = "Computer wins!"
+        if (user.getGameboard().allShipsSunk()) {
+          gameInfo.textContent = "Computer wins!";
+        } else if (computer.getGameboard().allShipsSunk()) {
+          gameInfo.textContent = "User wins!";
         }
-        else if(computer.getGameboard().allShipsSunk()){
-          gameInfo.textContent = "User wins!"
-        }
-        gameInfo.textContent += " Press reset or random to restart!"
+        gameInfo.textContent += " Press reset or random to restart!";
       }
-      renderGameboard();  
+      renderGameboard();
     }
   };
-
 
   const startGame = () => {
     user = new Player("User", new Gameboard(10, 10));
@@ -302,7 +317,7 @@ const domManager = (() => {
     setUpEventListeners(main, nav);
     renderGameboard();
     test = createUserShips();
-    main.append(test)
+    main.append(test);
   };
 
   return { startGame };
