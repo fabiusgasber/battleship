@@ -47,11 +47,11 @@ const domManager = (() => {
           player?.getGameboard().placeShip(ship, [randomX, randomY], direction);
           placed = true;
         } catch (error) {
-          if(player === user) gameInfo.textContent = error.message;
+          if (player === user) gameInfo.textContent = error.message;
         }
       }
     });
-  }
+  };
 
   const randomizeShips = (e) => {
     if (e && e.target.getAttribute("id") === "random-btn") {
