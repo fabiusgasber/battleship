@@ -11,7 +11,7 @@ const domManager = (() => {
   const gameInfo = document.querySelector("#game-info");
   let test = null;
 
-  const SHIPS = [
+  const getShips = () => [
     new Ship(5),
     new Ship(4),
     new Ship(3),
@@ -30,37 +30,41 @@ const domManager = (() => {
     }
   };
 
+  const placeRandomShips = (player) => {
+    getShips().forEach((ship) => {
+      let placed = false;
+      while (!placed) {
+        let randomX = Math.floor(Math.random() * 10);
+        let randomY = Math.floor(Math.random() * 10);
+        const direction = Math.floor(Math.random() * 2) === 1 ? "h" : "v";
+        if (
+          (direction === "h" && ship.length + randomY >= 10) ||
+          (direction === "v" && ship.length + randomX >= 10) ||
+          player?.getGameboard().board[randomX][randomY] instanceof Ship
+        )
+          continue;
+        try {
+          player?.getGameboard().placeShip(ship, [randomX, randomY], direction);
+          placed = true;
+        } catch (error) {
+          if(player === user) gameInfo.textContent = error.message;
+        }
+      }
+    });
+  }
+
   const randomizeShips = (e) => {
     if (e && e.target.getAttribute("id") === "random-btn") {
       const test = document.querySelector("#reset-btn");
       test.click();
-      SHIPS.forEach((ship) => {
-        let placed = false;
-        while (!placed) {
-          let randomX = Math.floor(Math.random() * 10);
-          let randomY = Math.floor(Math.random() * 10);
-          const direction = Math.floor(Math.random() * 2) === 1 ? "h" : "v";
-          if (
-            (direction === "h" && ship.length + randomY >= 10) ||
-            (direction === "v" && ship.length + randomX >= 10) ||
-            user.getGameboard().board[randomX][randomY] instanceof Ship
-          )
-            continue;
-          try {
-            user.getGameboard().placeShip(ship, [randomX, randomY], direction);
-            placed = true;
-          } catch (error) {
-            gameInfo.textContent = error.message;
-          }
-        }
-      });
+      placeRandomShips(user);
       renderGameboard();
       checkBeginPossible();
     }
   };
 
   const checkBeginPossible = () => {
-    if (user.getGameboard().ships.length === SHIPS.length) {
+    if (user.getGameboard().ships.length === getShips().length) {
       gameInfo.textContent = "Press start to play...";
     }
   };
@@ -71,7 +75,7 @@ const domManager = (() => {
       computer.getGameboard().resetBoard();
       test = createUserShips();
       gameInfo.textContent = "User place your ships...";
-      if (!computer.getGameboard().ships.length) placeComputerShips();
+      if (!computer.getGameboard().ships.length) placeRandomShips(computer);
     }
     renderGameboard();
     main.append(test);
@@ -164,12 +168,12 @@ const domManager = (() => {
   const createUserShips = () => {
     const userShips = document.createElement("div");
     userShips.classList.add("user-ships");
-    for (let i = 0; i < SHIPS.length; i += 1) {
+    for (let i = 0; i < getShips().length; i += 1) {
       const container = document.createElement("div");
       container.classList.add("ship-container");
       container.setAttribute("draggable", true);
-      container.setAttribute("length", SHIPS[i].length);
-      for (let j = 0; j < SHIPS[i].length; j += 1) {
+      container.setAttribute("length", getShips()[i].length);
+      for (let j = 0; j < getShips()[i].length; j += 1) {
         const ship = document.createElement("div");
         ship.classList.add("ship-part");
         container.append(ship);
@@ -177,14 +181,6 @@ const domManager = (() => {
       userShips.append(container);
     }
     return userShips;
-  };
-
-  const placeComputerShips = () => {
-    computer.getGameboard().placeShip(new Ship(5), [0, 5], "h");
-    computer.getGameboard().placeShip(new Ship(4), [0, 1], "v");
-    computer.getGameboard().placeShip(new Ship(3), [6, 7], "h");
-    computer.getGameboard().placeShip(new Ship(3), [8, 2], "h");
-    computer.getGameboard().placeShip(new Ship(2), [5, 1], "v");
   };
 
   const createCell = (attr, index) => {
@@ -285,8 +281,8 @@ const domManager = (() => {
   const takeTurns = (userTurn) => {
     main.removeEventListener("click", userAttack);
     if (
-      user.getGameboard().ships.length === SHIPS.length &&
-      computer.getGameboard().ships.length === SHIPS.length
+      user.getGameboard().ships.length === getShips().length &&
+      computer.getGameboard().ships.length === getShips().length
     ) {
       if (userTurn && !isEnd()) {
         gameInfo.textContent = "Waiting for user to make turn...";
@@ -311,7 +307,7 @@ const domManager = (() => {
   const startGame = () => {
     user = new Player("User", new Gameboard(10, 10));
     computer = new Player("Computer", new Gameboard(10, 10));
-    placeComputerShips(computer);
+    placeRandomShips(computer);
     const nav = createNav();
     header.append(nav);
     setUpEventListeners(main, nav);
