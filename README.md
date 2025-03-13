@@ -42,7 +42,3 @@ The game is structured into the following components:
 
 ## 🤝 Contributing  
 Feel free to **fork** the repository and submit **pull requests** with improvements!  
-
----
-
-Let me know if you’d like any further refinements! 🚀
